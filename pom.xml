@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>glamour-lwjgl</artifactId>
-  <version>1.0.1-SNAPSHOT</version>
+  <version>1.0.1</version>
   <name>Saint Andreas GL Wrappers</name>
   
   <parent>
@@ -14,6 +14,7 @@
     <connection>scm:git:https://github.com/jherico/glamour.git</connection>
     <developerConnection>scm:git:git@github.com:jherico/glamour.git</developerConnection>
     <url>https://github.com/jherico/glamour</url>
+    <tag>glamour-lwjgl-1.0.1</tag>
   </scm>
 
   <repositories>
@@ -47,7 +48,7 @@
     <dependency>
       <groupId>org.saintandreas</groupId>
       <artifactId>math</artifactId>
-      <version>1.0.1</version>
+      <version>1.0.2</version>
     </dependency>
     <dependency>
       <groupId>com.google.code.findbugs</groupId>
