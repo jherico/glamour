@@ -12,7 +12,7 @@
 
   <scm>
     <connection>scm:git:https://github.com/jherico/glamour.git</connection>
-    <developerConnection>scm:git:git://git@github.com/jherico/glamour.git</developerConnection>
+    <developerConnection>scm:git:git@github.com:jherico/glamour.git</developerConnection>
     <url>https://github.com/jherico/glamour</url>
   </scm>
 
