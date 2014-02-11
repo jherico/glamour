@@ -18,6 +18,7 @@ import java.awt.Rectangle;
 import org.saintandreas.gl.IndexedGeometry;
 import org.saintandreas.gl.MatrixStack;
 import org.saintandreas.gl.OpenGL;
+import org.saintandreas.gl.buffers.IndexBuffer;
 import org.saintandreas.gl.buffers.VertexArray;
 import org.saintandreas.gl.shaders.Program;
 import org.saintandreas.math.Vector3f;
@@ -54,7 +55,8 @@ public class GlDemo extends LwjglApp {
 
   @Override
   protected void update() {
-    MatrixStack.MODELVIEW.rotate((float) (Math.PI / 100f), Vector3f.UNIT_Y);
+    MatrixStack.MODELVIEW.rotate((float) (Math.PI / 178f), Vector3f.UNIT_X);
+    MatrixStack.MODELVIEW.rotate((float) (Math.PI / 100f), Vector3f.UNIT_Z);
   }
 
   @Override
@@ -65,14 +67,14 @@ public class GlDemo extends LwjglApp {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     cubeProgram.use();
-    MatrixStack.bind(cubeProgram);
+    MatrixStack.bindAll(cubeProgram);
     cubeGeometry.ibo.bind();
     cubeGeometry.bindVertexArray();
 
     cubeGeometry.draw();
 
     VertexArray.unbind();
-    cubeGeometry.ibo.unbind();
+    IndexBuffer.unbind();
     Program.clear();
   }
 
@@ -82,7 +84,7 @@ public class GlDemo extends LwjglApp {
 
   @Override
   protected void setupDisplay() {
-    setupDisplay(new Rectangle(100, 100, 300, 150));
+    setupDisplay(new Rectangle(100, 100, 300, 200));
   }
 
   public static void main(String[] args) {
