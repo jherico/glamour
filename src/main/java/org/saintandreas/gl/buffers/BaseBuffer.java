@@ -30,9 +30,6 @@ public class BaseBuffer {
     glBindBuffer(target, 0);
   }
 
-  public void unbind() {
-    unbind(target);
-  }
 
   public void setData(ByteBuffer data) {
     setData(data, GL_STATIC_DRAW);

@@ -168,6 +168,10 @@ public final class OpenGL {
     return result;
   }
 
+  public static IndexedGeometry makeTexturedQuad() {
+    return makeTexturedQuad(new Vector2f(-1), new Vector2f(1));
+  }
+
   public static IndexedGeometry makeTexturedQuad(Vector2f min, Vector2f max) {
     return makeTexturedQuad(min, max, new Vector2f(0, 0), new Vector2f(1, 1));
   }
@@ -185,7 +189,7 @@ public final class OpenGL {
       result.add(new Vector4f(tmin.x, tmax.y, 0, 0));
       result.add(new Vector4f(max.x, max.y, 0, 1));
       result.add(new Vector4f(tmax.x, tmax.y, 0, 0));
-      vertices = toVertexBuffer(makeColorCubeVertices());
+      vertices = toVertexBuffer(result);
     }
     IndexBuffer indices = toIndexBuffer(Lists.newArrayList(
         Short.valueOf((short) 0), Short.valueOf((short) 1),

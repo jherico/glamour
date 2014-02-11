@@ -58,6 +58,13 @@ public class Program {
     shaders[FRAGMENT_SHADER] = fs;
   }
 
+  public void destroy() {
+    if (program != -1) {
+      glDeleteProgram(program);
+      program = -1;
+    }
+  }
+
   public void link() {
     for (Shader s : shaders) {
       if (null != s && s.shader == -1) {

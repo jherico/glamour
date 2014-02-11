@@ -103,6 +103,11 @@ public class MatrixStack extends Stack<Matrix4f> {
     bindModelview(program);
   }
 
+  public MatrixStack multiply(Matrix4f m) {
+    set(peek().mult(m));
+    return this;
+  }
+
   public MatrixStack preMultiply(Matrix4f m) {
     set(m.mult(peek()));
     return this;

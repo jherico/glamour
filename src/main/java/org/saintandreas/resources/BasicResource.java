@@ -5,6 +5,8 @@ public class BasicResource implements Resource {
   public BasicResource(String path) {
     this.path = path;
   }
+  
+  @Override
   public String getPath() {
     return path;
   }

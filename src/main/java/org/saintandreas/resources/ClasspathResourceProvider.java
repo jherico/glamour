@@ -4,12 +4,15 @@ import java.io.InputStream;
 
 public class ClasspathResourceProvider extends InputStreamResourceProvider {
 
+  @Override
   public long getLastModified(Resource r) {
     return 0;
   }
 
+  @Override
   protected InputStream getInputStream(Resource r) {
-    return getClass().getResourceAsStream("/" + r.getPath());
+    String resourcePath = "/" + r.getPath();
+    return getClass().getResourceAsStream(resourcePath);
   }
 
 }

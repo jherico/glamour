@@ -10,6 +10,7 @@ import com.google.common.io.ByteStreams;
 public abstract class InputStreamResourceProvider implements ResourceProvider {
   protected abstract InputStream getInputStream(Resource r) throws IOException;
 
+  @Override
   public String getAsString(Resource r) {
     try (InputStream is = getInputStream(r)) {
       return new String(ByteStreams.toByteArray(is), Charsets.UTF_8);
@@ -18,6 +19,7 @@ public abstract class InputStreamResourceProvider implements ResourceProvider {
     }
   }
 
+  @Override
   public ByteBuffer getAsByteBuffer(Resource r) {
     try (InputStream is = getInputStream(r)) {
       return ByteBuffer.wrap(ByteStreams.toByteArray(is));

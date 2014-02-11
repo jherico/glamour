@@ -51,6 +51,18 @@ public class Texture {
     glBindTexture(target, 0);
   }
 
+  public void parameter(int pname, int value) {
+    glTexParameteri(target, pname, value);
+  }
+
+  public void parameter(int pname, float value) {
+    glTexParameterf(target, pname, value);
+  }
+
+  public void image2d(int internalformat, int width, int height, int format, int type, ByteBuffer pixels) {
+    glTexImage2D(target, 0, internalformat, width, height, 0, format, type, pixels);
+  }
+
   public static Texture loadImage(String resource, int textureType, int loadTarget) throws IOException {
     URL resourceUrl = Resources.getResource(resource);
     return loadImage(resourceUrl, textureType, loadTarget);

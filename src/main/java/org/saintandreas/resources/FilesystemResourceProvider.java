@@ -16,6 +16,7 @@ public class FilesystemResourceProvider extends InputStreamResourceProvider {
     this(new File(file));
   }
 
+  @Override
   public long getLastModified(Resource r) {
     return getFile(r).lastModified();
   }
@@ -24,6 +25,7 @@ public class FilesystemResourceProvider extends InputStreamResourceProvider {
     return new File(basePath, r.getPath());
   }
 
+  @Override
   protected InputStream getInputStream(Resource r) throws FileNotFoundException {
     return new FileInputStream(getFile(r));
   }
