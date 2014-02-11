@@ -1,16 +1,15 @@
 package org.saintandreas.gl;
 
-import org.saintandreas.math.Vector4f;
-
+import android.renderscript.Float4;
 
 
 public class Colors {
-  public static final Vector4f R = new Vector4f(1, 0, 0, 1); 
-  public static final Vector4f G = new Vector4f(0, 1, 0, 1);
-  public static final Vector4f B = new Vector4f(0, 0, 1, 1);
-  public static final Vector4f C = new Vector4f(0, 1, 1, 1);
-  public static final Vector4f Y = new Vector4f(1, 1, 0, 1);
-  public static final Vector4f M = new Vector4f(1, 0, 1, 1);
-  public static final Vector4f K = new Vector4f(0, 0, 0, 1);
-  public static final Vector4f W = new Vector4f(1, 1, 1, 1);;
+  public static final Float4 R = new Float4(1, 0, 0, 1); 
+  public static final Float4 G = new Float4(0, 1, 0, 1);
+  public static final Float4 B = new Float4(0, 0, 1, 1);
+  public static final Float4 C = new Float4(0, 1, 1, 1);
+  public static final Float4 Y = new Float4(1, 1, 0, 1);
+  public static final Float4 M = new Float4(1, 0, 1, 1);
+  public static final Float4 K = new Float4(0, 0, 0, 1);
+  public static final Float4 W = new Float4(1, 1, 1, 1);;
 }

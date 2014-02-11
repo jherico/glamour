@@ -4,7 +4,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
 
 public class BufferUtils {
 
@@ -28,14 +27,6 @@ public class BufferUtils {
 
   public static FloatBuffer getFloatBuffer(int size) {
     return getByteBuffer(size * (Float.SIZE >> 3)).asFloatBuffer();
-  }
-
-  public static ShortBuffer createShortBuffer(int size) {
-    return getByteBuffer(size * (Short.SIZE >> 3)).asShortBuffer();
-  }
-
-  public static ShortBuffer createShortBuffer() {
-    return createShortBuffer(1);
   }
 
   public static FloatBuffer createFloatBuffer(int i) {

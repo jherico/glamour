@@ -4,11 +4,11 @@ import java.util.Stack;
 
 import org.saintandreas.gl.shaders.Program;
 
-import org.saintandreas.math.Matrix3f;
-import org.saintandreas.math.Matrix4f;
-import org.saintandreas.math.Quaternion;
-import org.saintandreas.math.Vector2f;
-import org.saintandreas.math.Vector3f;
+import android.renderscript.Float2;
+import android.renderscript.Float3;
+import android.renderscript.Matrix4f;
+import copied.com.jme3.math.Vector2f;
+import copied.com.jme3.math.Vector3f;
 
 @SuppressWarnings("serial")
 public class MatrixStack extends Stack<Matrix4f> {
@@ -18,75 +18,58 @@ public class MatrixStack extends Stack<Matrix4f> {
   MatrixStack() {
     push(new Matrix4f());
   }
-  
-  @Override
-  public Matrix4f pop() {
-    Matrix4f result = super.pop();
-    assert(size() > 0);
-    return result;
-  }
 
   public MatrixStack push() {
-    push(peek());
+    Matrix4f newMatrix = new Matrix4f();
+    newMatrix.load(peek());
+    push(newMatrix);
     return this;
   }
 
-  public Matrix4f top() {
-    return peek();
-  }
-
   public MatrixStack identity() {
-    return set(new Matrix4f());
+    peek().loadIdentity();
+    return this;
   }
 
   public MatrixStack transpose() {
-    return set(peek().transpose());
+    peek().transpose();
+    return this;
   }
 
-  public MatrixStack translate(Vector2f vec) {
-    return set(peek().translate(vec));
+  public MatrixStack translate(Float2 vec) {
+    peek().translate(vec.x,  vec.y,  0);
+    return this;
   }
 
-  public MatrixStack translate(Vector3f vec) {
-    return set(peek().translate(vec));
+  public MatrixStack translate(Float3 vec) {
+    peek().translate(vec.x, vec.y, vec.z);
+    return this;
   }
 
-  public MatrixStack rotate(float angle, Vector3f axis) {
-    return set(peek().rotate(angle, axis));
+  public MatrixStack scale(Float3 vec) {
+    peek().scale(vec.x, vec.y, vec.z);
+    return this;
   }
 
-  public MatrixStack rotate(Quaternion q) {
-    return set(peek().rotate(q));
-  }
-
-  public MatrixStack rotate(Matrix3f m) {
-    return set(peek().rotate(m));
-  }
-
-  public MatrixStack scale(Vector3f vec) {
-    return set(peek().scale(vec));
-  }
-
-  public MatrixStack scale(float f) {
-    return set(peek().scale(f));
+  public MatrixStack rotate(float angle, Float3 axis) {
+    peek().rotate(angle, axis.x, axis.y, axis.z);
+    return this;
   }
 
   public MatrixStack orthographic(float left, float right, float bottom,
       float top, float near, float far) {
-    return set(Matrix4f.orthographic(left, right, bottom, top, near, far));
+    peek().load(OpenGL.orthographic(left, right, bottom, top, near, far));
+    return this;
   }
 
   public MatrixStack lookat(Vector3f eye, Vector3f center, Vector3f up) {
-    return set(Matrix4f.lookat(eye, center, up));
+    peek().load(OpenGL.lookat(eye, center, up));
+    return this;
   }
 
   public MatrixStack perspective(float fovy, float aspect, float zNear,
       float zFar) {
-    return set(Matrix4f.perspective(fovy, aspect, zNear, zFar));
-  }
-
-  public MatrixStack set(Matrix4f m) {
-    set(size() - 1, m);
+    peek().load(OpenGL.perspective(fovy, aspect, zNear, zFar));
     return this;
   }
 
@@ -97,14 +80,14 @@ public class MatrixStack extends Stack<Matrix4f> {
   public static void bindModelview(Program program) {
     program.setUniform("ModelView", MatrixStack.MODELVIEW.peek());
   }
-
+  
   public static void bind(Program program) {
     bindProjection(program);
     bindModelview(program);
   }
-
+  
   public MatrixStack preMultiply(Matrix4f m) {
-    set(m.mult(peek()));
+    peek().load(Matrix4f.mul(m, peek(), new Matrix4f()));
     return this;
   }
 

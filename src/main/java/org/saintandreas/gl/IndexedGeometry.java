@@ -1,6 +1,6 @@
 package org.saintandreas.gl;
 
-import static org.lwjgl.opengl.GL11.*;
+import static android.opengl.GLES20.*;
 
 import org.saintandreas.gl.buffers.IndexBuffer;
 import org.saintandreas.gl.buffers.VertexArray;
@@ -46,7 +46,6 @@ public class IndexedGeometry extends Geometry {
     glDrawElements(drawType, elements, GL_UNSIGNED_SHORT, 0);
   }
   
-  @Override
   public void destroy() {
     super.destroy();
     ibo.destroy();

@@ -1,7 +1,6 @@
 package org.saintandreas.gl;
 
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL20.*;
+import static android.opengl.GLES20.*;
 
 import java.util.LinkedHashMap;
 

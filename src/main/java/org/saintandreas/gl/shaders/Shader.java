@@ -1,20 +1,26 @@
 package org.saintandreas.gl.shaders;
 
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL20.*;
+import static android.opengl.GLES20.*;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.logging.Logger;
+
+import android.content.res.Resources;
 
 public class Shader {
+
   private static final Logger LOG = LoggerFactory.getLogger(Shader.class);
-  private final String source;
+  private final String sourcePath;
   private final int type;
+  private long sourceTimestamp = -1;
   int shader = -1;
 
-  public Shader(int type, String source) {
-    this.source = source;
+  public Shader(int type, String sourcePath) {
+    this.sourcePath = sourcePath;
     this.type = type;
+  }
+
+  public boolean isStale() {
+    return false;
   }
 
   public void attach(int program) {
@@ -23,7 +29,8 @@ public class Shader {
 
   public void compile() {
     try {
-      int newShader = compile(source, type);
+      sourceTimestamp = Resources.lastModified(sourcePath);
+      int newShader = compile(Resources.fromResources(sourcePath), type);
       if (-1 != shader) {
         glDeleteShader(shader);
       }

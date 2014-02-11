@@ -1,8 +1,5 @@
 package org.saintandreas.gl.shaders;
 
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL20.*;
-
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -11,17 +8,11 @@ import java.util.Map;
 
 import org.saintandreas.gl.BufferUtils;
 import org.saintandreas.gl.OpenGL;
-import org.saintandreas.math.Matrix4f;
-import org.saintandreas.math.Vector3f;
-import org.saintandreas.math.Vector4f;
-import org.saintandreas.resources.Resource;
-import org.saintandreas.resources.ResourceManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import android.renderscript.Matrix4f;
+import static android.opengl.GLES20.*;
 
 public class Program {
-
-  private static final Logger LOG = LoggerFactory.getLogger(Program.class);
 
   enum ShaderType {
     VERTEX, GEOMETRY, FRAGMENT
@@ -37,11 +28,6 @@ public class Program {
 
   private Shader[] shaders = new Shader[3];
   public int program = -1;
-
-  public Program(Resource vs, Resource fs) {
-    this(ResourceManager.getProvider().getAsString(vs),
-        ResourceManager.getProvider().getAsString(fs));
-  }
 
   public Program(String vssf, String fssf) {
     this(new Shader(GL_VERTEX_SHADER, vssf), null, new Shader(
@@ -60,7 +46,7 @@ public class Program {
 
   public void link() {
     for (Shader s : shaders) {
-      if (null != s && s.shader == -1) {
+      if (null != s && s.isStale()) {
         s.compile();
       }
     }
@@ -95,11 +81,10 @@ public class Program {
   }
 
   public void use() {
-    if (program == -1) {
-      throw new IllegalStateException("Program is not linked");
+    if (program != -1) {
+      CURRENT_PROGRAM = this;
+      glUseProgram(program);
     }
-    CURRENT_PROGRAM = this;
-    glUseProgram(program);
     OpenGL.checkError();
   }
 
@@ -162,7 +147,7 @@ public class Program {
 
   public void setUniform(final String name, Matrix4f m) {
     FloatBuffer fb = BufferUtils.getFloatBuffer(16);
-    m.fillFloatBuffer(fb, true);
+    m.store(fb);
     fb.position(0);
     setUniformMatrix4(name, fb);
   }

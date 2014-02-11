@@ -1,6 +1,6 @@
 package org.saintandreas.gl.buffers;
 
-import static org.lwjgl.opengl.GL15.*;
+import static android.opengl.GLES20.*;
 
 public class VertexBuffer extends BaseBuffer {
   public VertexBuffer() {

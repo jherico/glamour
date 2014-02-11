@@ -1,11 +1,13 @@
 package org.saintandreas.gl.buffers;
 
-import static org.lwjgl.opengl.GL15.*;
+import static android.opengl.GLES20.*;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
+
+import org.saintandreas.gl.OpenGL;
 
 public class BaseBuffer {
 
@@ -19,7 +21,7 @@ public class BaseBuffer {
 
   public BaseBuffer(int target) {
     this.target = target;
-    buffer = glGenBuffers();
+    buffer = OpenGL.glGenBuffers();
   }
 
   public void bind() {
@@ -51,19 +53,19 @@ public class BaseBuffer {
   }
 
   public void setData(ByteBuffer data, int usage) {
-    glBufferData(target, data, usage);
+    glBufferData(target, data.capacity(), data, usage);
   }
 
   public void setData(FloatBuffer data, int usage) {
-    glBufferData(target, data, usage);
+    glBufferData(target, data.capacity() * 4, data, usage);
   }
 
   public void setData(IntBuffer data, int usage) {
-    glBufferData(target, data, usage);
+    glBufferData(target, data.capacity() * 4, data, usage);
   }
 
   public void setData(ShortBuffer data, int usage) {
-    glBufferData(target, data, usage);
+    glBufferData(target, data.capacity() * 2, data, usage);
   }
   
   public void destroy() {
