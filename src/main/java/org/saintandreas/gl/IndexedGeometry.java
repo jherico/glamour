@@ -2,15 +2,22 @@ package org.saintandreas.gl;
 
 import static org.lwjgl.opengl.GL11.*;
 
+import java.util.List;
+
 import org.saintandreas.gl.buffers.IndexBuffer;
 import org.saintandreas.gl.buffers.VertexArray;
 import org.saintandreas.gl.buffers.VertexBuffer;
+import org.saintandreas.math.Vector4f;
 
 public class IndexedGeometry extends Geometry {
   public final IndexBuffer ibo;
 
   public static class Builder extends Geometry.Builder {
     protected final IndexBuffer ibo;
+
+    public Builder(List<Short> indices, List<Vector4f> vertices) {
+      this(OpenGL.toIndexBuffer(indices), OpenGL.toVertexBuffer(vertices), indices.size());
+    }
 
     public Builder(IndexBuffer ibo, VertexBuffer vbo, int elements) {
       super(vbo, elements);
@@ -25,7 +32,8 @@ public class IndexedGeometry extends Geometry {
 
     @Override
     public IndexedGeometry build() {
-      return new IndexedGeometry(ibo, vbo, buildVertexArray(), drawType, elements);
+      return new IndexedGeometry(ibo, vbo, buildVertexArray(), drawType,
+          elements);
     }
   }
 
@@ -34,7 +42,7 @@ public class IndexedGeometry extends Geometry {
     super(vbo, vao, drawType, elements);
     this.ibo = ibo;
   }
-  
+
   @Override
   public void bindVertexArray() {
     super.bindVertexArray();
@@ -45,7 +53,7 @@ public class IndexedGeometry extends Geometry {
   public void draw() {
     glDrawElements(drawType, elements, GL_UNSIGNED_SHORT, 0);
   }
-  
+
   @Override
   public void destroy() {
     super.destroy();

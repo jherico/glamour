@@ -12,10 +12,12 @@ import org.saintandreas.math.Vector3f;
 
 @SuppressWarnings("serial")
 public class MatrixStack extends Stack<Matrix4f> {
-  public static final MatrixStack MODELVIEW = new MatrixStack();
-  public static final MatrixStack PROJECTION = new MatrixStack();
+  public static final MatrixStack MODELVIEW = new MatrixStack("ModelView");
+  public static final MatrixStack PROJECTION = new MatrixStack("Projection");
+  private final String bindPoint;
 
-  MatrixStack() {
+  MatrixStack(String bindPoint) {
+    this.bindPoint = bindPoint;
     push(new Matrix4f());
   }
   
@@ -91,17 +93,23 @@ public class MatrixStack extends Stack<Matrix4f> {
   }
 
   public static void bindProjection(Program program) {
-    program.setUniform("Projection", MatrixStack.PROJECTION.peek());
+    PROJECTION.bind(program);
   }
 
   public static void bindModelview(Program program) {
-    program.setUniform("ModelView", MatrixStack.MODELVIEW.peek());
+    MODELVIEW.bind(program);
   }
 
-  public static void bind(Program program) {
+  public static void bindAll(Program program) {
     bindProjection(program);
     bindModelview(program);
   }
+
+  public MatrixStack bind(Program program) {
+    program.setUniform(bindPoint, peek());
+    return this;
+  }
+
 
   public MatrixStack multiply(Matrix4f m) {
     set(peek().mult(m));

@@ -10,7 +10,7 @@ import org.saintandreas.gl.buffers.VertexBuffer;
 import org.saintandreas.gl.shaders.Attribute;
 
 public class Geometry {
-  
+
   public static class Builder {
     protected final VertexBuffer vbo;
     protected int drawType = GL_TRIANGLES;
@@ -59,11 +59,12 @@ public class Geometry {
       for (Integer location : attributes.keySet()) {
         int size = attributes.get(location);
         glEnableVertexAttribArray(location);
-        glVertexAttribPointer(location, size >> 2, GL_FLOAT, false, stride, offset);
+        glVertexAttribPointer(location, size >> 2, GL_FLOAT, false, stride,
+            offset);
         offset += size;
       }
       VertexArray.unbind();
-      vbo.unbind();
+      VertexBuffer.unbind();
       return vao;
     }
 
@@ -83,7 +84,7 @@ public class Geometry {
     this.drawType = drawType;
     this.elements = elements;
   }
-  
+
   public void bindVertexArray() {
     vao.bind();
   }
@@ -91,11 +92,11 @@ public class Geometry {
   public void draw() {
     glDrawArrays(drawType, 0, elements);
   }
-  
+
   public VertexBuffer getVertxBuffer() {
     return vbo;
   }
-  
+
   public void destroy() {
     vao.destroy();
     vbo.destroy();

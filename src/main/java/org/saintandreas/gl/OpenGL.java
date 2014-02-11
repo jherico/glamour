@@ -81,10 +81,9 @@ public final class OpenGL {
 
   public static IndexedGeometry makeColorCube() {
     if (null == COLOR_CUBE) {
-      VertexBuffer vertices = toVertexBuffer(makeColorCubeVertices());
-      IndexBuffer indices = toIndexBuffer(makeColorCubeIndices());
-      IndexedGeometry.Builder builder = new IndexedGeometry.Builder(indices,
-          vertices, 6 * 4);
+      List<Vector4f> vertices = makeColorCubeVertices();
+      List<Short> indices = makeColorCubeIndices();
+      IndexedGeometry.Builder builder = new IndexedGeometry.Builder(indices, vertices);
       builder.withDrawType(GL_TRIANGLE_STRIP).withAttribute(Attribute.POSITION)
           .withAttribute(Attribute.COLOR);
       COLOR_CUBE = builder.build();
@@ -125,6 +124,7 @@ public final class OpenGL {
     m = new Matrix4f().rotate(TAU / -4f, Vector3f.UNIT_X).translate(
         new Vector3f(0, 0, 0.5f));
     result.addAll(interleaveConstants(transformed(q, m), Colors.G));
+    
     // Bottom
     m = new Matrix4f().rotate(TAU / 4f, Vector3f.UNIT_X).translate(
         new Vector3f(0, 0, 0.5f));
@@ -139,6 +139,7 @@ public final class OpenGL {
     m = new Matrix4f().rotate(TAU / 4f, Vector3f.UNIT_Y).translate(
         new Vector3f(0, 0, 0.5f));
     result.addAll(interleaveConstants(transformed(q, m), Colors.C));
+    
     return result;
   }
 
@@ -151,7 +152,7 @@ public final class OpenGL {
     VertexBuffer result = new VertexBuffer();
     result.bind();
     result.setData(fb);
-    result.unbind();
+    VertexBuffer.unbind();
     return result;
   }
 
@@ -164,7 +165,7 @@ public final class OpenGL {
     IndexBuffer result = new IndexBuffer();
     result.bind();
     result.setData(fb);
-    result.unbind();
+    IndexBuffer.unbind();
     return result;
   }
 
