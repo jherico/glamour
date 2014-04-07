@@ -1,24 +1,32 @@
 package org.saintandreas.gl;
 
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL12.*;
+import static org.lwjgl.opengl.GL13.*;
 
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.saintandreas.gl.buffers.IndexBuffer;
 import org.saintandreas.gl.buffers.VertexBuffer;
 import org.saintandreas.gl.shaders.Attribute;
+import org.saintandreas.gl.textures.Texture;
 import org.saintandreas.math.Matrix4f;
 import org.saintandreas.math.Vector2f;
 import org.saintandreas.math.Vector3f;
 import org.saintandreas.math.Vector4f;
+import org.saintandreas.resources.Images;
+import org.saintandreas.resources.Resource;
 
 import com.google.common.collect.Lists;
 
 public final class OpenGL {
+
 
   private OpenGL() {
   }
@@ -201,5 +209,43 @@ public final class OpenGL {
         .withAttribute(Attribute.TEX);
     return builder.build();
   }
+
+  private static final Map<Resource, Texture> CUBE_MAPS = new HashMap<>();
+  private static final int RESOURCE_ORDER[] = {
+    GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
+    GL_TEXTURE_CUBE_MAP_POSITIVE_X,
+    GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
+    GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
+    GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,
+    GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
+  };
+
+  public static Texture getCubemapTextures(Resource ... resources) {
+    assert(resources.length > 0);
+    Resource firstResource = resources[0];
+    assert(null != firstResource);
+    if (!CUBE_MAPS.containsKey(firstResource)) {
+
+      Texture texture = new Texture(GL_TEXTURE_CUBE_MAP);
+      texture.bind();
+      texture.parameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+      texture.parameter(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+      texture.parameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+      texture.parameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+      texture.parameter(GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+      for (int i = 0; i < 6 && i < resources.length; ++i) {
+        Resource imageResource = resources[i];
+        if (null == imageResource) {
+          continue;
+        }
+        int loadTarget = RESOURCE_ORDER[i];
+        texture.loadImageData(Images.load(imageResource), loadTarget);
+      }
+      texture.unbind();
+      CUBE_MAPS.put(firstResource, texture);
+    }
+    return CUBE_MAPS.get(firstResource);
+  }
+
 
 }

@@ -6,6 +6,8 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
@@ -19,12 +21,10 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Hashtable;
 
-import javax.imageio.ImageIO;
-
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
-
-import com.google.common.io.Resources;
+import org.saintandreas.resources.Images;
+import org.saintandreas.resources.Resource;
 
 public class Texture {
   public final int id;
@@ -59,47 +59,70 @@ public class Texture {
     glTexParameterf(target, pname, value);
   }
 
-  public void image2d(int internalformat, int width, int height, int format, int type, ByteBuffer pixels) {
-    glTexImage2D(target, 0, internalformat, width, height, 0, format, type, pixels);
+  public void image2d(int internalformat, int width, int height, int format,
+      int type, ByteBuffer pixels) {
+    glTexImage2D(target, 0, internalformat, width, height, 0, format, type,
+        pixels);
   }
 
-  public static Texture loadImage(String resource, int textureType, int loadTarget) throws IOException {
-    URL resourceUrl = Resources.getResource(resource);
-    return loadImage(resourceUrl, textureType, loadTarget);
+
+  public void loadImageData(BufferedImage image, int loadTarget) {
+    // Flip the image vertically
+    AffineTransform tx = AffineTransform.getScaleInstance(1, -1);
+    tx.translate(0, -image.getHeight(null));
+    AffineTransformOp op = new AffineTransformOp(tx,
+        AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+    image = op.filter(image, null);
+
+    GL11.glTexImage2D(loadTarget, 0, GL11.GL_RGBA8, image.getWidth(),
+        image.getHeight(), 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE,
+        convertImageData(image));
   }
-  
-  public static Texture loadImage(URL url, int textureType, int loadTarget)
-      throws IOException {
-    BufferedImage image = ImageIO.read(url);
+
+  public static Texture loadImage(BufferedImage image, int textureType, int loadTarget) {
     Texture result = new Texture(textureType);
     result.bind();
-    GL11.glTexImage2D(loadTarget, 0, GL11.GL_RGBA8, image.getWidth(),
-        image.getHeight(), 0, GL11.GL_RGB, GL11.GL_UNSIGNED_BYTE,
-        convertImageData(image));
+    result.loadImageData(image, loadTarget);
     result.unbind();
     return result;
+  }
+
+  public static Texture loadImage(Resource r, int textureType, int loadTarget) {
+    return loadImage(Images.load(r), textureType, loadTarget);
+  }
+
+  public static Texture loadImage(URL url, int textureType, int loadTarget) {
+    return loadImage(Images.load(url), textureType, loadTarget);
+  }
+
+  public static Texture loadImage(BufferedImage image, int textureType)  {
+    return loadImage(image, textureType, textureType);
+  }
+
+  public static Texture loadImage(Resource r, int textureType) throws IOException {
+    return loadImage(r, textureType, textureType);
   }
 
   public static Texture loadImage(URL url, int textureType) throws IOException {
     return loadImage(url, textureType, textureType);
   }
 
-  public static Texture loadImage(String resource, int textureType) throws IOException {
-    return loadImage(resource, textureType, textureType);
-  }
-  
-  public static Texture loadImage(URL url) throws IOException {
-    return loadImage(url, GL_TEXTURE_2D);
+  public static Texture loadImage(BufferedImage image)  {
+    return loadImage(image, GL_TEXTURE_2D);
   }
 
-  public static Texture loadImage(String resource) throws IOException {
-    return loadImage(resource, GL_TEXTURE_2D);
+  public static Texture loadImage(Resource r) throws IOException {
+    return loadImage(r, GL_TEXTURE_2D);
+  }
+
+  public static Texture loadImage(URL url) throws IOException {
+    return loadImage(url, GL_TEXTURE_2D);
   }
 
   /**
    * Convert the buffered image to a texture
    */
-  private static ByteBuffer convertImageData(BufferedImage bufferedImage) {
+  public static ByteBuffer convertImageData(BufferedImage bufferedImage) {
     ByteBuffer imageBuffer;
     WritableRaster raster;
     BufferedImage texImage;

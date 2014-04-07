@@ -26,7 +26,11 @@ public class FilesystemResourceProvider extends InputStreamResourceProvider {
   }
 
   @Override
-  protected InputStream getInputStream(Resource r) throws FileNotFoundException {
-    return new FileInputStream(getFile(r));
+  public InputStream getAsInputStream(Resource r) {
+    try {
+      return new FileInputStream(getFile(r));
+    } catch (FileNotFoundException e) {
+      throw new IllegalStateException("Could not find file resource " + r.getPath(), e);
+    }
   }
 }
