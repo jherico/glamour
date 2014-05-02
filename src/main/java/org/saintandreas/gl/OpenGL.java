@@ -5,6 +5,7 @@ import static org.lwjgl.opengl.GL12.*;
 import static org.lwjgl.opengl.GL13.*;
 
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -152,7 +153,7 @@ public final class OpenGL {
   }
 
   public static VertexBuffer toVertexBuffer(Collection<Vector4f> vertices) {
-    FloatBuffer fb = BufferUtils.createFloatBuffer(vertices.size() * 4);
+    FloatBuffer fb = BufferUtils.getFloatBuffer(vertices.size() * 4);
     for (Vector4f v : vertices) {
       v.fillBuffer(fb);
     }
@@ -164,10 +165,23 @@ public final class OpenGL {
     return result;
   }
 
-  public static IndexBuffer toIndexBuffer(Collection<Short> vertices) {
-    ShortBuffer fb = BufferUtils.createShortBuffer(vertices.size());
-    for (Short v : vertices) {
-      fb.put(v);
+  public static IndexBuffer toShortIndexBuffer(Collection<? extends Number> vertices) {
+    ShortBuffer fb = BufferUtils.getShortBuffer(vertices.size());
+    for (Number v : vertices) {
+      fb.put(v.shortValue());
+    }
+    fb.position(0);
+    IndexBuffer result = new IndexBuffer();
+    result.bind();
+    result.setData(fb);
+    IndexBuffer.unbind();
+    return result;
+  }
+
+  public static IndexBuffer toIntIndexBuffer(Collection<? extends Number> vertices) {
+    IntBuffer fb = BufferUtils.getIntBuffer(vertices.size());
+    for (Number v : vertices) {
+      fb.put(v.intValue());
     }
     fb.position(0);
     IndexBuffer result = new IndexBuffer();
@@ -200,7 +214,7 @@ public final class OpenGL {
       result.add(new Vector4f(tmax.x, tmax.y, 0, 0));
       vertices = toVertexBuffer(result);
     }
-    IndexBuffer indices = toIndexBuffer(Lists.newArrayList(
+    IndexBuffer indices = toShortIndexBuffer(Lists.newArrayList(
         Short.valueOf((short) 0), Short.valueOf((short) 1),
         Short.valueOf((short) 2), Short.valueOf((short) 3)));
     IndexedGeometry.Builder builder = new IndexedGeometry.Builder(indices,

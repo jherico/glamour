@@ -15,8 +15,8 @@ public class IndexedGeometry extends Geometry {
   public static class Builder extends Geometry.Builder {
     protected final IndexBuffer ibo;
 
-    public Builder(List<Short> indices, List<Vector4f> vertices) {
-      this(OpenGL.toIndexBuffer(indices), OpenGL.toVertexBuffer(vertices), indices.size());
+    public Builder(List<? extends Number> indices, List<Vector4f> vertices) {
+      this(OpenGL.toIntIndexBuffer(indices), OpenGL.toVertexBuffer(vertices), indices.size());
     }
 
     public Builder(IndexBuffer ibo, VertexBuffer vbo, int elements) {
@@ -51,7 +51,7 @@ public class IndexedGeometry extends Geometry {
 
   @Override
   public void draw() {
-    glDrawElements(drawType, elements, GL_UNSIGNED_SHORT, 0);
+    glDrawElements(drawType, elements, GL_UNSIGNED_INT, 0);
   }
 
   @Override

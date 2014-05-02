@@ -1,24 +1,19 @@
 package org.saintandreas.scene;
 
-import java.util.function.Consumer;
-
 import org.saintandreas.gl.Geometry;
 import org.saintandreas.gl.buffers.VertexArray;
 
 public class GeometryNode extends SceneNode {
-  @SuppressWarnings("unused")
-  private final Geometry geometry;
-  public Consumer<Geometry> drawClosure = g -> {
-  };
 
-  public GeometryNode(Geometry g) {
+  public GeometryNode(Geometry g, Runnable closure) {
     super(()->{
       g.bindVertexArray();
-    }, ()->{
-      g.draw();
-    }, ()->{
+    }, closure, ()->{
       VertexArray.unbind();
     });
-    this.geometry = g;
+  }
+
+  public GeometryNode(Geometry g) {
+    this(g, ()->{ g.draw(); });
   }
 }

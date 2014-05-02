@@ -1,8 +1,12 @@
 package org.saintandreas.gl;
 
+import static org.lwjgl.opengl.GL11.*;
+
+import java.nio.FloatBuffer;
 import java.util.Stack;
 import java.util.function.Consumer;
 
+import org.lwjgl.BufferUtils;
 import org.saintandreas.gl.shaders.Program;
 import org.saintandreas.math.Matrix4f;
 
@@ -19,11 +23,25 @@ public class MatrixStack extends AbstractTransformable<MatrixStack> {
   public int size() {
     return stack.size() + 1;
   }
-  public MatrixStack with_push(Consumer<MatrixStack> closure ) {
-    closure.accept(push());
+  
+  public MatrixStack withPush(Consumer<MatrixStack> closure) {
+    int startSize = size();
+    push();
+    closure.accept(this);
     pop();
+    assert(size() == startSize);
     return this;
   }
+
+  public MatrixStack withPush(Runnable closure) {
+    int startSize = size();
+    push();
+    closure.run();
+    pop();
+    assert(size() == startSize);
+    return this;
+  }
+  
   public MatrixStack pop() {
     set(stack.pop());
     return this;
@@ -50,6 +68,20 @@ public class MatrixStack extends AbstractTransformable<MatrixStack> {
   public static void bindAll(Program program) {
     bindProjection(program);
     bindModelview(program);
+  }
+  
+  public static void bindAllGl() {
+    FloatBuffer fb = BufferUtils.createFloatBuffer(16);
+    MatrixStack.PROJECTION.top().fillFloatBuffer(fb, true);
+    fb.rewind();
+    glMatrixMode(GL_PROJECTION);
+    glLoadMatrix(fb);
+
+    fb.rewind();
+    MatrixStack.MODELVIEW.top().fillFloatBuffer(fb, true);
+    fb.rewind();
+    glMatrixMode(GL_MODELVIEW);
+    glLoadMatrix(fb);
   }
 
   public MatrixStack bind(Program program) {

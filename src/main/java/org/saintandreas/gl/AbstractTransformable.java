@@ -15,7 +15,7 @@ public abstract class AbstractTransformable<T extends AbstractTransformable<T>> 
   }
 
   @SuppressWarnings("unchecked")
-  protected T set(Matrix4f m) {
+  public T set(Matrix4f m) {
     transform = m;
     return (T)this;
   }

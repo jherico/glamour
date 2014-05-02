@@ -9,16 +9,16 @@ public class SceneNode implements Renderable {
   protected Runnable postRender;
   protected Runnable render;
 
-  protected SceneNode() {
+  public SceneNode() {
     this(() -> {
     }, () -> {
     }, () -> {
     });
   }
 
-  public <T extends Renderable> T addChild(T child) {
+  public SceneNode addChild(SceneNode child) {
     children.add(child);
-    return child;
+    return this;
   }
 
   /**
