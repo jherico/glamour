@@ -40,7 +40,7 @@ public final class OpenGL {
   }
 
   public static FloatBuffer toFloatBuffer(Matrix4f matrix) {
-    FloatBuffer buffer = BufferUtils.createFloatBuffer(16);
+    FloatBuffer buffer = BufferUtils.getFloatBuffer(16);
     matrix.fillFloatBuffer(buffer);
     buffer.position(0);
     return buffer;
