@@ -31,7 +31,12 @@
     <dependency>
       <groupId>org.saintandreas</groupId>
       <artifactId>math</artifactId>
-      <version>1.0.2</version>
+      <version>[1, 2)</version>
+    </dependency>
+    <dependency>
+      <groupId>org.saintandreas</groupId>
+      <artifactId>xres</artifactId>
+      <version>[1.0.1, 2)</version>
     </dependency>
     <dependency>
       <groupId>com.google.code.findbugs</groupId>

@@ -71,21 +71,27 @@ public class MatrixStack extends AbstractTransformable<MatrixStack> {
   }
   
   public static void bindAllGl() {
-    FloatBuffer fb = BufferUtils.createFloatBuffer(16);
-    MatrixStack.PROJECTION.top().fillFloatBuffer(fb, true);
-    fb.rewind();
     glMatrixMode(GL_PROJECTION);
-    glLoadMatrix(fb);
+    PROJECTION.bindGl();
 
-    fb.rewind();
-    MatrixStack.MODELVIEW.top().fillFloatBuffer(fb, true);
-    fb.rewind();
     glMatrixMode(GL_MODELVIEW);
-    glLoadMatrix(fb);
+    MODELVIEW.bindGl();
   }
 
   public MatrixStack bind(Program program) {
     program.setUniform(bindPoint, top());
+    return this;
+  }
+
+  // WARNING: not thread safe
+  private static final FloatBuffer MATRIX_FLOAT_BUFFER = 
+      BufferUtils.createFloatBuffer(16);
+
+  public MatrixStack bindGl() {
+    MATRIX_FLOAT_BUFFER.rewind();
+    top().fillFloatBuffer(MATRIX_FLOAT_BUFFER, true);
+    MATRIX_FLOAT_BUFFER.rewind();
+    glLoadMatrix(MATRIX_FLOAT_BUFFER);
     return this;
   }
 }

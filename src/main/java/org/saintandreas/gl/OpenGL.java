@@ -13,6 +13,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.measure.Measure;
+import javax.measure.quantity.Length;
+import javax.measure.unit.SI;
+
 import org.saintandreas.gl.buffers.IndexBuffer;
 import org.saintandreas.gl.buffers.VertexBuffer;
 import org.saintandreas.gl.shaders.Attribute;
@@ -27,7 +31,6 @@ import org.saintandreas.resources.Resource;
 import com.google.common.collect.Lists;
 
 public final class OpenGL {
-
 
   private OpenGL() {
   }
@@ -191,36 +194,30 @@ public final class OpenGL {
     return result;
   }
 
-  public static IndexedGeometry makeTexturedQuad() {
-    return makeTexturedQuad(new Vector2f(-1), new Vector2f(1));
-  }
-
   public static IndexedGeometry makeTexturedQuad(Vector2f min, Vector2f max) {
     return makeTexturedQuad(min, max, new Vector2f(0, 0), new Vector2f(1, 1));
   }
 
   public static IndexedGeometry makeTexturedQuad(Vector2f min, Vector2f max,
       Vector2f tmin, Vector2f tmax) {
-    VertexBuffer vertices;
-    {
-      List<Vector4f> result = new ArrayList<>();
-      result.add(new Vector4f(min.x, min.y, 0, 1));
-      result.add(new Vector4f(tmin.x, tmin.y, 0, 0));
-      result.add(new Vector4f(max.x, min.y, 0, 1));
-      result.add(new Vector4f(tmax.x, tmin.y, 0, 0));
-      result.add(new Vector4f(min.x, max.y, 0, 1));
-      result.add(new Vector4f(tmin.x, tmax.y, 0, 0));
-      result.add(new Vector4f(max.x, max.y, 0, 1));
-      result.add(new Vector4f(tmax.x, tmax.y, 0, 0));
-      vertices = toVertexBuffer(result);
-    }
-    IndexBuffer indices = toShortIndexBuffer(Lists.newArrayList(
-        Short.valueOf((short) 0), Short.valueOf((short) 1),
-        Short.valueOf((short) 2), Short.valueOf((short) 3)));
-    IndexedGeometry.Builder builder = new IndexedGeometry.Builder(indices,
-        vertices, 4);
-    builder.withDrawType(GL_TRIANGLE_STRIP).withAttribute(Attribute.POSITION)
-        .withAttribute(Attribute.TEX);
+    Vector2f texMin = tmin;
+    Vector2f texMax = tmax;
+    List<Vector4f> vertices = new ArrayList<>();
+    vertices.add(new Vector4f(min.x, min.y, 0, 1));
+    vertices.add(new Vector4f(texMin.x, texMin.y, 0, 0));
+    vertices.add(new Vector4f(max.x, min.y, 0, 1));
+    vertices.add(new Vector4f(texMax.x, texMin.y, 0, 0));
+    vertices.add(new Vector4f(max.x, max.y, 0, 1));
+    vertices.add(new Vector4f(texMax.x, texMax.y, 0, 0));
+    vertices.add(new Vector4f(min.x, max.y, 0, 1));
+    vertices.add(new Vector4f(texMin.x, texMax.y, 0, 0));
+    List<Short> indices = new ArrayList<>();
+    indices.add((short) 0); // LL
+    indices.add((short) 1); // LR
+    indices.add((short) 3); // UL 
+    indices.add((short) 2); // UR 
+    IndexedGeometry.Builder builder = new IndexedGeometry.Builder(indices, vertices);
+    builder.withDrawType(GL_TRIANGLE_STRIP).withAttribute(Attribute.POSITION).withAttribute(Attribute.TEX);
     return builder.build();
   }
 
@@ -261,5 +258,22 @@ public final class OpenGL {
     return CUBE_MAPS.get(firstResource);
   }
 
+  public static IndexedGeometry makeTexturedQuad() {
+    return makeTexturedQuad(1, Measure.valueOf(1, SI.METER));
+  }
+
+  public static IndexedGeometry makeTexturedQuad(float aspect) {
+    return makeTexturedQuad(aspect, Measure.valueOf(1, SI.METER));
+  }
+
+  public static IndexedGeometry makeTexturedQuad(float aspect, Measure<Length> size) {
+    float halfSize = Math.abs(size.floatValue(SI.METER)) / 2.0f;
+    Vector2f min = new Vector2f(-halfSize, -halfSize / aspect);
+    Vector2f max = new Vector2f(halfSize, halfSize / aspect);
+    Vector2f texMin = new Vector2f(0, 0);
+    Vector2f texMax = new Vector2f(1, 1);
+    return makeTexturedQuad(min, max, texMin, texMax);
+  }
+  
 
 }
