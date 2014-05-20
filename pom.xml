@@ -33,12 +33,10 @@
         <groupId>com.googlecode.mavennatives</groupId>
         <artifactId>maven-nativedependencies-plugin</artifactId>
       </plugin>
-      <plugins>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-gpg-plugin</artifactId>
         </plugin>
-      </plugins>
     </plugins>
   </build>
   <dependencies>
