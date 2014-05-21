@@ -259,14 +259,14 @@ public final class OpenGL {
   }
 
   public static IndexedGeometry makeTexturedQuad() {
-    return makeTexturedQuad(1, Measure.valueOf(1, SI.METER));
+    return makeTexturedQuad(1, Measure.valueOf(1.0f, SI.METER));
   }
 
   public static IndexedGeometry makeTexturedQuad(float aspect) {
-    return makeTexturedQuad(aspect, Measure.valueOf(1, SI.METER));
+    return makeTexturedQuad(aspect, Measure.valueOf(1.0f, SI.METER));
   }
 
-  public static IndexedGeometry makeTexturedQuad(float aspect, Measure<Length> size) {
+  public static IndexedGeometry makeTexturedQuad(float aspect, Measure<Float, Length> size) {
     float halfSize = Math.abs(size.floatValue(SI.METER)) / 2.0f;
     Vector2f min = new Vector2f(-halfSize, -halfSize / aspect);
     Vector2f max = new Vector2f(halfSize, halfSize / aspect);
