@@ -57,13 +57,17 @@ public abstract class LwjglApp implements Runnable {
       }
       update();
       drawFrame();
-      Display.update();
-      Display.sync(60);
+      finishFrame();
     }
     onDestroy();
     Display.destroy();
   }
 
+  protected void finishFrame() {
+    Display.update();
+    Display.sync(60);
+  }
+  
   protected void update() {
   }
 
