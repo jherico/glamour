@@ -28,6 +28,10 @@ public abstract class LwjglApp implements Runnable {
   }
 
   protected abstract void setupDisplay();
+  
+  protected void setupContext() {
+    
+  }
 
   protected void setupDisplay(Rectangle r) {
     setupDisplay(r.x, r.y, r.width, r.height);
@@ -47,6 +51,7 @@ public abstract class LwjglApp implements Runnable {
   @Override
   public void run() {
     try {
+      setupContext();
       setupDisplay();
       Display.create(pixelFormat, contextAttributes);
       GLContext.useContext(glContext, false);
