@@ -27,6 +27,9 @@ public abstract class LwjglApp implements Runnable {
   protected void drawFrame() {
   }
 
+  protected void setupContext() {
+  }
+
   protected abstract void setupDisplay();
 
   protected void setupDisplay(Rectangle r) {
