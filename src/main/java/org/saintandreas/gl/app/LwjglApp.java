@@ -8,9 +8,11 @@ import java.awt.Rectangle;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.ContextAttribs;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GLContext;
+import org.lwjgl.opengl.PixelFormat;
 
 public abstract class LwjglApp implements Runnable {
   private GLContext glContext = new GLContext();
@@ -43,7 +45,12 @@ public abstract class LwjglApp implements Runnable {
   public void run() {
     try {
       setupDisplay();
-      Display.create();
+      PixelFormat pixelFormat = new PixelFormat();
+      ContextAttribs contextAtrributes = new ContextAttribs(4, 4)
+        .withForwardCompatible(true)
+        .withProfileCore(true);
+      Display.create(pixelFormat, contextAtrributes);
+      //Display.create();
       GLContext.useContext(glContext, false);
       Mouse.create();
       Keyboard.create();
