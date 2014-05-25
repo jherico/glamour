@@ -8,14 +8,18 @@ import java.awt.Rectangle;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.ContextAttribs;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GLContext;
+import org.lwjgl.opengl.PixelFormat;
 
 public abstract class LwjglApp implements Runnable {
   private GLContext glContext = new GLContext();
   protected int width, height;
   protected float aspect = 1.0f;
+  protected ContextAttribs contextAttributes = new ContextAttribs();
+  protected PixelFormat pixelFormat = new PixelFormat();
 
   protected void initGl() {
   }
@@ -36,6 +40,7 @@ public abstract class LwjglApp implements Runnable {
       throw new RuntimeException(e);
     }
     Display.setLocation(left, top);
+    Display.setVSyncEnabled(true);
     onResize(width, height);
   }
 
@@ -43,7 +48,7 @@ public abstract class LwjglApp implements Runnable {
   public void run() {
     try {
       setupDisplay();
-      Display.create();
+      Display.create(pixelFormat, contextAttributes);
       GLContext.useContext(glContext, false);
       Mouse.create();
       Keyboard.create();
@@ -57,11 +62,14 @@ public abstract class LwjglApp implements Runnable {
       }
       update();
       drawFrame();
-      Display.update();
-      Display.sync(60);
+      finishFrame();
     }
     onDestroy();
     Display.destroy();
+  }
+
+  protected void finishFrame() {
+    Display.update();
   }
 
   protected void update() {
