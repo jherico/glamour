@@ -18,6 +18,8 @@ public abstract class LwjglApp implements Runnable {
   private GLContext glContext = new GLContext();
   protected int width, height;
   protected float aspect = 1.0f;
+  protected ContextAttribs contextAttributes = new ContextAttribs();
+  protected PixelFormat pixelFormat = new PixelFormat();
 
   protected void initGl() {
   }
@@ -38,6 +40,7 @@ public abstract class LwjglApp implements Runnable {
       throw new RuntimeException(e);
     }
     Display.setLocation(left, top);
+    Display.setVSyncEnabled(true);
     onResize(width, height);
   }
 
@@ -45,12 +48,7 @@ public abstract class LwjglApp implements Runnable {
   public void run() {
     try {
       setupDisplay();
-      PixelFormat pixelFormat = new PixelFormat();
-      ContextAttribs contextAtrributes = new ContextAttribs(4, 4)
-        .withForwardCompatible(true)
-        .withProfileCore(true);
-      Display.create(pixelFormat, contextAtrributes);
-      //Display.create();
+      Display.create(pixelFormat, contextAttributes);
       GLContext.useContext(glContext, false);
       Mouse.create();
       Keyboard.create();
@@ -72,9 +70,8 @@ public abstract class LwjglApp implements Runnable {
 
   protected void finishFrame() {
     Display.update();
-    Display.sync(60);
   }
-  
+
   protected void update() {
   }
 
