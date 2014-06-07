@@ -3,6 +3,7 @@ package org.saintandreas.gl;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL12.*;
 import static org.lwjgl.opengl.GL13.*;
+import static org.lwjgl.opengl.GL31.*;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -18,8 +19,10 @@ import javax.measure.quantity.Length;
 import javax.measure.unit.SI;
 
 import org.saintandreas.gl.buffers.IndexBuffer;
+import org.saintandreas.gl.buffers.VertexArray;
 import org.saintandreas.gl.buffers.VertexBuffer;
 import org.saintandreas.gl.shaders.Attribute;
+import org.saintandreas.gl.shaders.Program;
 import org.saintandreas.gl.textures.Texture;
 import org.saintandreas.math.Matrix4f;
 import org.saintandreas.math.Vector2f;
@@ -38,7 +41,7 @@ public final class OpenGL {
   public static void checkError() {
     int error = glGetError();
     if (error != 0) {
-      throw new IllegalStateException("GL error " + error);
+//      throw new IllegalStateException("GL error " + error);
     }
   }
 
@@ -275,5 +278,72 @@ public final class OpenGL {
     return makeTexturedQuad(min, max, texMin, texMax);
   }
   
+  public static void bindProjection(Program program) {
+    program.setUniform("Projection", MatrixStack.PROJECTION.top());
+  }
 
+  public static void bindModelview(Program program) {
+    program.setUniform("ModelView", MatrixStack.MODELVIEW.top());
+  }
+
+  public static void bindAll(Program program) {
+    bindProjection(program);
+    bindModelview(program);
+  }
+
+  @Deprecated
+  public static void bindAll() {
+    bindProjection();
+    bindModelview();
+  }
+
+  @Deprecated
+  public static void bindProjection() {
+    glMatrixMode(GL_PROJECTION);
+    loadMatrix(MatrixStack.PROJECTION.top());
+  }
+
+  @Deprecated
+  public static void bindModelview() {
+    glMatrixMode(GL_MODELVIEW);
+    loadMatrix(MatrixStack.MODELVIEW.top());
+  }
+
+  // WARNING: not thread safe
+  private static final FloatBuffer MATRIX_FLOAT_BUFFER = 
+      BufferUtils.getFloatBuffer(16);
+
+  @Deprecated
+  public static void loadMatrix(Matrix4f m) {
+    glMatrixMode(GL_PROJECTION);
+    MATRIX_FLOAT_BUFFER.rewind();
+    m.fillFloatBuffer(MATRIX_FLOAT_BUFFER, true);
+    MATRIX_FLOAT_BUFFER.rewind();
+    glLoadMatrix(MATRIX_FLOAT_BUFFER);
+  }
+
+  private static IndexedGeometry COLOR_CUBE_GEOMETRY = null;
+  private static Program COLOR_CUBE_PROGRAM = null;
+
+  public static void drawColorCube() {
+    glEnable(GL_PRIMITIVE_RESTART);
+    glPrimitiveRestartIndex(Short.MAX_VALUE);
+    if (null == COLOR_CUBE_GEOMETRY ) {
+      COLOR_CUBE_GEOMETRY = makeColorCube();
+    }
+    if (null == COLOR_CUBE_PROGRAM) {
+      COLOR_CUBE_PROGRAM = new Program(
+          GlamourResources.SHADERS_COLORED_VS,
+          GlamourResources.SHADERS_COLORED_FS);
+      COLOR_CUBE_PROGRAM.link();
+    }
+    COLOR_CUBE_PROGRAM.use();
+    bindAll(COLOR_CUBE_PROGRAM);
+    COLOR_CUBE_GEOMETRY.ibo.bind();
+    COLOR_CUBE_GEOMETRY.bindVertexArray();
+    COLOR_CUBE_GEOMETRY.draw();
+    VertexArray.unbind();
+    IndexBuffer.unbind();
+    Program.clear();
+  }
 }
