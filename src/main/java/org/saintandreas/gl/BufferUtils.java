@@ -14,35 +14,31 @@ public class BufferUtils {
     return buffer;
   }
 
+  public static ByteBuffer getByteBuffer() {
+    return getByteBuffer(1);
+  }
+
+  public static IntBuffer getIntBuffer(int size) {
+    return getByteBuffer(size * 8).asIntBuffer();
+  }
+
   public static IntBuffer getIntBuffer() {
     return getIntBuffer(1);
   }
 
-  public static IntBuffer getIntBuffer(int size) {
-    return getByteBuffer(size * (Integer.SIZE >> 3)).asIntBuffer();
+  public static ShortBuffer getShortBuffer(int size) {
+    return getByteBuffer(size * 4).asShortBuffer();
+  }
+
+  public static ShortBuffer getShortBuffer() {
+    return getShortBuffer(1);
+  }
+
+  public static FloatBuffer getFloatBuffer(int size) {
+    return getByteBuffer(size * 8).asFloatBuffer();
   }
 
   public static FloatBuffer getFloatBuffer() {
     return getFloatBuffer(1);
-  }
-
-  public static FloatBuffer getFloatBuffer(int size) {
-    return getByteBuffer(size * (Float.SIZE >> 3)).asFloatBuffer();
-  }
-
-  public static ShortBuffer createShortBuffer(int size) {
-    return getByteBuffer(size * (Short.SIZE >> 3)).asShortBuffer();
-  }
-
-  public static ShortBuffer createShortBuffer() {
-    return createShortBuffer(1);
-  }
-
-  public static FloatBuffer createFloatBuffer(int i) {
-    return getFloatBuffer(i);
-  }
-
-  public static ByteBuffer createByteBuffer(int size) {
-    return getByteBuffer(size);
   }
 }

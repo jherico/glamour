@@ -21,22 +21,15 @@ public abstract class LwjglApp implements Runnable {
   protected ContextAttribs contextAttributes = new ContextAttribs();
   protected PixelFormat pixelFormat = new PixelFormat();
 
-  protected void initGl() {
-  }
-
-  protected void drawFrame() {
-  }
-
   protected abstract void setupDisplay();
-  
-  protected void setupContext() {
-    
-  }
+  protected abstract void drawFrame();
+
+  protected void setupContext() { }
 
   protected void setupDisplay(Rectangle r) {
     setupDisplay(r.x, r.y, r.width, r.height);
   }
-  
+
   protected void setupDisplay(int left, int top, int width, int height) {
     try {
       Display.setDisplayMode(new DisplayMode(width, height));
@@ -47,6 +40,8 @@ public abstract class LwjglApp implements Runnable {
     Display.setVSyncEnabled(true);
     onResize(width, height);
   }
+
+  protected void initGl() { }
 
   @Override
   public void run() {

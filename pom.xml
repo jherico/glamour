@@ -12,14 +12,6 @@
   <name>Saint Andreas GL Wrappers</name>
   <description>Class wrappers for geometry, texture, shaders, etc</description>
 
-  <licenses>
-    <license>
-      <name>The Apache Software License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
-
   <scm>
     <connection>scm:git:https://github.com/jherico/glamour.git</connection>
     <developerConnection>scm:git:git@github.com:jherico/glamour.git</developerConnection>
@@ -38,27 +30,34 @@
         </plugin>
     </plugins>
   </build>
+  
   <dependencies>
     <dependency>
       <groupId>org.saintandreas</groupId>
       <artifactId>math</artifactId>
-      <version>[1, 2)</version>
+      <version>[1.0.3, 2)</version>
     </dependency>
     <dependency>
       <groupId>org.saintandreas</groupId>
       <artifactId>xres</artifactId>
-      <version>[1, 2)</version>
+      <version>[1.0.1, 2)</version>
     </dependency>
-
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>jsr305</artifactId>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
     </dependency>
-
+    <dependency>
+      <groupId>org.jscience</groupId>
+      <artifactId>jscience</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.lwjgl.lwjgl</groupId>
       <artifactId>lwjgl</artifactId>
@@ -67,7 +66,6 @@
       <groupId>org.lwjgl.lwjgl</groupId>
       <artifactId>lwjgl_util</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>

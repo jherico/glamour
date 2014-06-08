@@ -3,8 +3,10 @@ package org.saintandreas.gl;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL12.*;
 import static org.lwjgl.opengl.GL13.*;
+import static org.lwjgl.opengl.GL31.*;
 
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,9 +14,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.measure.Measure;
+import javax.measure.quantity.Length;
+import javax.measure.unit.SI;
+
 import org.saintandreas.gl.buffers.IndexBuffer;
+import org.saintandreas.gl.buffers.VertexArray;
 import org.saintandreas.gl.buffers.VertexBuffer;
 import org.saintandreas.gl.shaders.Attribute;
+import org.saintandreas.gl.shaders.Program;
 import org.saintandreas.gl.textures.Texture;
 import org.saintandreas.math.Matrix4f;
 import org.saintandreas.math.Vector2f;
@@ -27,19 +35,18 @@ import com.google.common.collect.Lists;
 
 public final class OpenGL {
 
-
   private OpenGL() {
   }
 
   public static void checkError() {
     int error = glGetError();
     if (error != 0) {
-      throw new IllegalStateException("GL error " + error);
+//      throw new IllegalStateException("GL error " + error);
     }
   }
 
   public static FloatBuffer toFloatBuffer(Matrix4f matrix) {
-    FloatBuffer buffer = BufferUtils.createFloatBuffer(16);
+    FloatBuffer buffer = BufferUtils.getFloatBuffer(16);
     matrix.fillFloatBuffer(buffer);
     buffer.position(0);
     return buffer;
@@ -152,7 +159,7 @@ public final class OpenGL {
   }
 
   public static VertexBuffer toVertexBuffer(Collection<Vector4f> vertices) {
-    FloatBuffer fb = BufferUtils.createFloatBuffer(vertices.size() * 4);
+    FloatBuffer fb = BufferUtils.getFloatBuffer(vertices.size() * 4);
     for (Vector4f v : vertices) {
       v.fillBuffer(fb);
     }
@@ -164,10 +171,10 @@ public final class OpenGL {
     return result;
   }
 
-  public static IndexBuffer toIndexBuffer(Collection<Short> vertices) {
-    ShortBuffer fb = BufferUtils.createShortBuffer(vertices.size());
-    for (Short v : vertices) {
-      fb.put(v);
+  public static IndexBuffer toShortIndexBuffer(Collection<? extends Number> vertices) {
+    ShortBuffer fb = BufferUtils.getShortBuffer(vertices.size());
+    for (Number v : vertices) {
+      fb.put(v.shortValue());
     }
     fb.position(0);
     IndexBuffer result = new IndexBuffer();
@@ -177,8 +184,17 @@ public final class OpenGL {
     return result;
   }
 
-  public static IndexedGeometry makeTexturedQuad() {
-    return makeTexturedQuad(new Vector2f(-1), new Vector2f(1));
+  public static IndexBuffer toIntIndexBuffer(Collection<? extends Number> vertices) {
+    IntBuffer fb = BufferUtils.getIntBuffer(vertices.size());
+    for (Number v : vertices) {
+      fb.put(v.intValue());
+    }
+    fb.position(0);
+    IndexBuffer result = new IndexBuffer();
+    result.bind();
+    result.setData(fb);
+    IndexBuffer.unbind();
+    return result;
   }
 
   public static IndexedGeometry makeTexturedQuad(Vector2f min, Vector2f max) {
@@ -187,26 +203,24 @@ public final class OpenGL {
 
   public static IndexedGeometry makeTexturedQuad(Vector2f min, Vector2f max,
       Vector2f tmin, Vector2f tmax) {
-    VertexBuffer vertices;
-    {
-      List<Vector4f> result = new ArrayList<>();
-      result.add(new Vector4f(min.x, min.y, 0, 1));
-      result.add(new Vector4f(tmin.x, tmin.y, 0, 0));
-      result.add(new Vector4f(max.x, min.y, 0, 1));
-      result.add(new Vector4f(tmax.x, tmin.y, 0, 0));
-      result.add(new Vector4f(min.x, max.y, 0, 1));
-      result.add(new Vector4f(tmin.x, tmax.y, 0, 0));
-      result.add(new Vector4f(max.x, max.y, 0, 1));
-      result.add(new Vector4f(tmax.x, tmax.y, 0, 0));
-      vertices = toVertexBuffer(result);
-    }
-    IndexBuffer indices = toIndexBuffer(Lists.newArrayList(
-        Short.valueOf((short) 0), Short.valueOf((short) 1),
-        Short.valueOf((short) 2), Short.valueOf((short) 3)));
-    IndexedGeometry.Builder builder = new IndexedGeometry.Builder(indices,
-        vertices, 4);
-    builder.withDrawType(GL_TRIANGLE_STRIP).withAttribute(Attribute.POSITION)
-        .withAttribute(Attribute.TEX);
+    Vector2f texMin = tmin;
+    Vector2f texMax = tmax;
+    List<Vector4f> vertices = new ArrayList<>();
+    vertices.add(new Vector4f(min.x, min.y, 0, 1));
+    vertices.add(new Vector4f(texMin.x, texMin.y, 0, 0));
+    vertices.add(new Vector4f(max.x, min.y, 0, 1));
+    vertices.add(new Vector4f(texMax.x, texMin.y, 0, 0));
+    vertices.add(new Vector4f(max.x, max.y, 0, 1));
+    vertices.add(new Vector4f(texMax.x, texMax.y, 0, 0));
+    vertices.add(new Vector4f(min.x, max.y, 0, 1));
+    vertices.add(new Vector4f(texMin.x, texMax.y, 0, 0));
+    List<Short> indices = new ArrayList<>();
+    indices.add((short) 0); // LL
+    indices.add((short) 1); // LR
+    indices.add((short) 3); // UL 
+    indices.add((short) 2); // UR 
+    IndexedGeometry.Builder builder = new IndexedGeometry.Builder(indices, vertices);
+    builder.withDrawType(GL_TRIANGLE_STRIP).withAttribute(Attribute.POSITION).withAttribute(Attribute.TEX);
     return builder.build();
   }
 
@@ -247,5 +261,89 @@ public final class OpenGL {
     return CUBE_MAPS.get(firstResource);
   }
 
+  public static IndexedGeometry makeTexturedQuad() {
+    return makeTexturedQuad(1, Measure.valueOf(1.0f, SI.METER));
+  }
 
+  public static IndexedGeometry makeTexturedQuad(float aspect) {
+    return makeTexturedQuad(aspect, Measure.valueOf(1.0f, SI.METER));
+  }
+
+  public static IndexedGeometry makeTexturedQuad(float aspect, Measure<Float, Length> size) {
+    float halfSize = Math.abs(size.floatValue(SI.METER)) / 2.0f;
+    Vector2f min = new Vector2f(-halfSize, -halfSize / aspect);
+    Vector2f max = new Vector2f(halfSize, halfSize / aspect);
+    Vector2f texMin = new Vector2f(0, 0);
+    Vector2f texMax = new Vector2f(1, 1);
+    return makeTexturedQuad(min, max, texMin, texMax);
+  }
+  
+  public static void bindProjection(Program program) {
+    program.setUniform("Projection", MatrixStack.PROJECTION.top());
+  }
+
+  public static void bindModelview(Program program) {
+    program.setUniform("ModelView", MatrixStack.MODELVIEW.top());
+  }
+
+  public static void bindAll(Program program) {
+    bindProjection(program);
+    bindModelview(program);
+  }
+
+  @Deprecated
+  public static void bindAll() {
+    bindProjection();
+    bindModelview();
+  }
+
+  @Deprecated
+  public static void bindProjection() {
+    glMatrixMode(GL_PROJECTION);
+    loadMatrix(MatrixStack.PROJECTION.top());
+  }
+
+  @Deprecated
+  public static void bindModelview() {
+    glMatrixMode(GL_MODELVIEW);
+    loadMatrix(MatrixStack.MODELVIEW.top());
+  }
+
+  // WARNING: not thread safe
+  private static final FloatBuffer MATRIX_FLOAT_BUFFER = 
+      BufferUtils.getFloatBuffer(16);
+
+  @Deprecated
+  public static void loadMatrix(Matrix4f m) {
+    glMatrixMode(GL_PROJECTION);
+    MATRIX_FLOAT_BUFFER.rewind();
+    m.fillFloatBuffer(MATRIX_FLOAT_BUFFER, true);
+    MATRIX_FLOAT_BUFFER.rewind();
+    glLoadMatrix(MATRIX_FLOAT_BUFFER);
+  }
+
+  private static IndexedGeometry COLOR_CUBE_GEOMETRY = null;
+  private static Program COLOR_CUBE_PROGRAM = null;
+
+  public static void drawColorCube() {
+    glEnable(GL_PRIMITIVE_RESTART);
+    glPrimitiveRestartIndex(Short.MAX_VALUE);
+    if (null == COLOR_CUBE_GEOMETRY ) {
+      COLOR_CUBE_GEOMETRY = makeColorCube();
+    }
+    if (null == COLOR_CUBE_PROGRAM) {
+      COLOR_CUBE_PROGRAM = new Program(
+          GlamourResources.SHADERS_COLORED_VS,
+          GlamourResources.SHADERS_COLORED_FS);
+      COLOR_CUBE_PROGRAM.link();
+    }
+    COLOR_CUBE_PROGRAM.use();
+    bindAll(COLOR_CUBE_PROGRAM);
+    COLOR_CUBE_GEOMETRY.ibo.bind();
+    COLOR_CUBE_GEOMETRY.bindVertexArray();
+    COLOR_CUBE_GEOMETRY.draw();
+    VertexArray.unbind();
+    IndexBuffer.unbind();
+    Program.clear();
+  }
 }
