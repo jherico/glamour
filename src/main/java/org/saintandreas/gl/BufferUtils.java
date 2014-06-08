@@ -19,7 +19,7 @@ public class BufferUtils {
   }
 
   public static IntBuffer getIntBuffer(int size) {
-    return getByteBuffer(size * (Integer.SIZE >> 3)).asIntBuffer();
+    return getByteBuffer(size * 4).asIntBuffer();
   }
 
   public static IntBuffer getIntBuffer() {
@@ -27,7 +27,7 @@ public class BufferUtils {
   }
 
   public static ShortBuffer getShortBuffer(int size) {
-    return getByteBuffer(size * (Short.SIZE >> 3)).asShortBuffer();
+    return getByteBuffer(size * 2).asShortBuffer();
   }
 
   public static ShortBuffer getShortBuffer() {
@@ -35,7 +35,7 @@ public class BufferUtils {
   }
 
   public static FloatBuffer getFloatBuffer(int size) {
-    return getByteBuffer(size * (Float.SIZE >> 3)).asFloatBuffer();
+    return getByteBuffer(size * 4).asFloatBuffer();
   }
 
   public static FloatBuffer getFloatBuffer() {
