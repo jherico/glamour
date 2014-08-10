@@ -72,7 +72,28 @@ public abstract class LwjglApp implements Runnable {
     Display.update();
   }
 
+
+  protected void onKeyboardEvent() {
+    int key = Keyboard.getEventKey();
+    switch (key) {
+    case Keyboard.KEY_ESCAPE:
+      System.exit(0);
+      break;
+    }
+  }
+
+  protected void onMouseEvent() {
+
+  }
+
   protected void update() {
+    while (Keyboard.next()) {
+      onKeyboardEvent();
+    }
+
+    while (Mouse.next()) {
+      onMouseEvent();
+    }
   }
 
   protected void onResize(int width, int height) {
