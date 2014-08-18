@@ -1,6 +1,7 @@
 package org.saintandreas.gl.textures;
 
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL30.*;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -74,9 +75,14 @@ public class Texture {
         AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
     image = op.filter(image, null);
 
+    ByteBuffer buffer = convertImageData(image); 
     GL11.glTexImage2D(loadTarget, 0, GL11.GL_RGBA8, image.getWidth(),
         image.getHeight(), 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE,
-        convertImageData(image));
+        buffer);
+  }
+
+  public void loadImageData(BufferedImage image) {
+    loadImageData(image, target);
   }
 
   public static Texture loadImage(BufferedImage image, int textureType, int loadTarget) {
@@ -140,6 +146,7 @@ public class Texture {
     g.setColor(new Color(0f, 0f, 0f, 0f));
     g.fillRect(0, 0, bufferedImage.getWidth(), bufferedImage.getHeight());
     g.drawImage(bufferedImage, 0, 0, null);
+    g.dispose();
 
     // build a byte buffer from the temporary image
     // that be used by OpenGL to produce a texture.

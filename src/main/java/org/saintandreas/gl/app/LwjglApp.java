@@ -21,17 +21,11 @@ public abstract class LwjglApp implements Runnable {
   protected ContextAttribs contextAttributes = new ContextAttribs();
   protected PixelFormat pixelFormat = new PixelFormat();
 
-  protected void initGl() {
-  }
-
-  protected void drawFrame() {
-  }
-
-  protected void setupContext() {
-  }
-
   protected abstract void setupDisplay();
+  protected abstract void drawFrame();
 
+  protected void setupContext() { }
+  
   protected void setupDisplay(Rectangle r) {
     setupDisplay(r.x, r.y, r.width, r.height);
   }
@@ -47,9 +41,12 @@ public abstract class LwjglApp implements Runnable {
     onResize(width, height);
   }
 
+  protected void initGl() { }
+
   @Override
   public void run() {
     try {
+      setupContext();
       setupDisplay();
       Display.create(pixelFormat, contextAttributes);
       GLContext.useContext(glContext, false);
@@ -75,7 +72,29 @@ public abstract class LwjglApp implements Runnable {
     Display.update();
   }
 
+
+  protected boolean onKeyboardEvent() {
+    int key = Keyboard.getEventKey();
+    switch (key) {
+    case Keyboard.KEY_ESCAPE:
+      System.exit(0);
+      return true;
+    }
+    return false;
+  }
+
+  protected boolean onMouseEvent() {
+    return false;
+  }
+
   protected void update() {
+    while (Keyboard.next()) {
+      onKeyboardEvent();
+    }
+
+    while (Mouse.next()) {
+      onMouseEvent();
+    }
   }
 
   protected void onResize(int width, int height) {

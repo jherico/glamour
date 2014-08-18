@@ -57,9 +57,8 @@ public class Shader {
       String log = getLog(newShader);
       LOG.warn("shader compile failed :" + log);
       glDeleteShader(newShader);
-      throw new IllegalStateException("Shader compile error" + log);
+      throw new ShaderCompileException("Shader compile error:\n" + log);
     }
     return newShader;
   }
-
 }

@@ -191,7 +191,7 @@ public class Program {
       String log = getLog(newProgram);
       LOG.warn("Link failed: " + log);
       glDeleteProgram(newProgram);
-      throw new RuntimeException(log);
+      throw new ProgramLinkException(log);
     }
     return newProgram;
   }
