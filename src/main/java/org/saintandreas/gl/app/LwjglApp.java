@@ -1,5 +1,6 @@
 package org.saintandreas.gl.app;
 
+import static org.lwjgl.opengl.GL11.*;
 
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -22,6 +23,7 @@ public abstract class LwjglApp implements Runnable {
   protected PixelFormat pixelFormat = new PixelFormat();
 
   protected abstract void setupDisplay();
+
   protected abstract void drawFrame();
 
   protected void setupContext() { }
@@ -49,7 +51,14 @@ public abstract class LwjglApp implements Runnable {
       setupContext();
       setupDisplay();
       Display.create(pixelFormat, contextAttributes);
+      // This supresses a strange error where when using 
+      // the Oculus Rift in direct mode on Windows, 
+      // there is an OpenGL GL_INVALID_FRAMEBUFFER_OPERATION 
+      // error present immediately after the context has been created.  
+      @SuppressWarnings("unused")
+      int err = glGetError();
       GLContext.useContext(glContext, false);
+
       Mouse.create();
       Keyboard.create();
     } catch (LWJGLException e) {
@@ -71,7 +80,6 @@ public abstract class LwjglApp implements Runnable {
   protected void finishFrame() {
     Display.update();
   }
-
 
   protected void onKeyboardEvent() {
     int key = Keyboard.getEventKey();
@@ -99,7 +107,7 @@ public abstract class LwjglApp implements Runnable {
   protected void onResize(int width, int height) {
     this.width = width;
     this.height = height;
-    this.aspect = (float)width / (float)height;
+    this.aspect = (float) width / (float) height;
   }
 
   protected void onDestroy() {
