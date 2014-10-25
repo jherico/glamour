@@ -6,7 +6,7 @@
     <version>1.0.0</version>
   </parent>
   <artifactId>glamour-lwjgl</artifactId>
-  <version>1.0.8</version>
+  <version>1.0.9-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>Saint Andreas GL Wrappers</name>
